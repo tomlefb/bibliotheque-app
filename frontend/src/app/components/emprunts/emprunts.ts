@@ -26,7 +26,7 @@ export class Emprunts implements OnInit {
   error = '';
   modalError = '';
   successMessage = '';
-  currentFilter = 'tous';
+  activeFilter = 'tous';
   searchTerm = '';
 
   // Form data
@@ -52,7 +52,7 @@ export class Emprunts implements OnInit {
     this.cdr.detectChanges();
 
     let request;
-    switch (this.currentFilter) {
+    switch (this.activeFilter) {
       case 'en_cours':
         request = this.apiService.getEmpruntsEnCours();
         break;
@@ -103,7 +103,7 @@ export class Emprunts implements OnInit {
   }
 
   filterEmprunts(filtre: string): void {
-    this.currentFilter = filtre;
+    this.activeFilter = filtre;
     this.loadEmprunts();
   }
 
@@ -133,7 +133,7 @@ export class Emprunts implements OnInit {
 
   addEmprunt(): void {
     if (!this.formData.etudiant_id || !this.formData.livre_id) {
-      this.modalError = 'Veuillez sélectionner un étudiant et un livre';
+      this.modalError = 'Veuillez sélectionner un étudiant et un livre disponible';
       this.cdr.detectChanges();
       return;
     }
