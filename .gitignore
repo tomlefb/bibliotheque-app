@@ -1,0 +1,39 @@
+# Variables d'environnement
+.env
+
+# Environnement virtuel Python
+venv/
+env/
+ENV/
+.venv/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+app.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cache pytest
+.pytest_cache/
+.coverage
+htmlcov/

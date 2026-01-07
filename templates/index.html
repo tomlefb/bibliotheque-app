@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque Universitaire - Gestion</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="bi bi-book"></i> Bibliothèque Universitaire
+            </span>
+            <span class="text-white">
+                <i class="bi bi-database"></i> Système de Gestion
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid mt-4">
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="etudiants-tab" data-bs-toggle="tab" data-bs-target="#etudiants" type="button">
+                    <i class="bi bi-people-fill"></i> Étudiants
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="livres-tab" data-bs-toggle="tab" data-bs-target="#livres" type="button">
+                    <i class="bi bi-book-fill"></i> Livres
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="emprunts-tab" data-bs-toggle="tab" data-bs-target="#emprunts" type="button">
+                    <i class="bi bi-arrow-left-right"></i> Emprunts
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button">
+                    <i class="bi bi-bar-chart-fill"></i> Statistiques
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        <div class="tab-content" id="mainTabsContent">
+
+            <!-- Étudiants Tab -->
+            <div class="tab-pane fade show active" id="etudiants" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3><i class="bi bi-people"></i> Gestion des Étudiants</h3>
+                    <div>
+                        <input type="text" class="form-control d-inline-block me-2" id="searchEtudiant" placeholder="Rechercher..." style="width: 250px;">
+                        <button class="btn btn-primary" onclick="showAddEtudiantModal()">
+                            <i class="bi bi-plus-circle"></i> Ajouter
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="etudiantsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Livres Tab -->
+            <div class="tab-pane fade" id="livres" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3><i class="bi bi-book"></i> Gestion des Livres</h3>
+                    <div>
+                        <input type="text" class="form-control d-inline-block me-2" id="searchLivre" placeholder="Rechercher..." style="width: 250px;">
+                        <button class="btn btn-primary" onclick="showAddLivreModal()">
+                            <i class="bi bi-plus-circle"></i> Ajouter
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ISBN</th>
+                                <th>Titre</th>
+                                <th>Éditeur</th>
+                                <th>Année</th>
+                                <th>Dispo</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="livresTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Emprunts Tab -->
+            <div class="tab-pane fade" id="emprunts" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3><i class="bi bi-arrow-left-right"></i> Gestion des Emprunts</h3>
+                    <div>
+                        <button class="btn btn-info btn-sm me-2" onclick="loadEmpruntsEnCours()">
+                            <i class="bi bi-hourglass-split"></i> En cours
+                        </button>
+                        <button class="btn btn-warning btn-sm me-2" onclick="loadEmpruntsEnRetard()">
+                            <i class="bi bi-exclamation-triangle"></i> En retard
+                        </button>
+                        <button class="btn btn-primary" onclick="showAddEmpruntModal()">
+                            <i class="bi bi-plus-circle"></i> Nouvel emprunt
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Étudiant</th>
+                                <th>Livre</th>
+                                <th>Date emprunt</th>
+                                <th>Date retour</th>
+                                <th>Retard</th>
+                                <th>Amende</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empruntsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div class="tab-pane fade" id="stats" role="tabpanel">
+                <h3 class="mb-4"><i class="bi bi-bar-chart"></i> Statistiques</h3>
+
+                <!-- Overview Cards -->
+                <div class="row mb-4" id="statsOverview">
+                    <!-- Cards will be inserted here by JS -->
+                </div>
+
+                <!-- Top Charts -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5><i class="bi bi-trophy"></i> Top 5 Étudiants</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nom</th>
+                                            <th>Emprunts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topEtudiantsTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5><i class="bi bi-star"></i> Top 5 Livres</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Titre</th>
+                                            <th>Emprunts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topLivresTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Étudiant -->
+    <div class="modal fade" id="etudiantModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="etudiantModalTitle">Ajouter un étudiant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="etudiantForm">
+                        <input type="hidden" id="etudiantId">
+                        <div class="mb-3">
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="etudiantNom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="etudiantPrenom" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="etudiantEmail" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEtudiant()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Livre -->
+    <div class="modal fade" id="livreModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="livreModalTitle">Ajouter un livre</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="livreForm">
+                        <input type="hidden" id="livreId">
+                        <div class="mb-3">
+                            <label class="form-label">ISBN *</label>
+                            <input type="text" class="form-control" id="livreISBN" required maxlength="13">
+                            <small class="text-muted">Code ISBN du livre (ex: 9782070612758)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Titre *</label>
+                            <input type="text" class="form-control" id="livreTitre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Éditeur *</label>
+                            <input type="text" class="form-control" id="livreAuteur" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Année de publication</label>
+                            <input type="number" class="form-control" id="livreAnnee" min="1000" max="2026">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveLivre()">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Emprunt -->
+    <div class="modal fade" id="empruntModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouvel emprunt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="empruntForm">
+                        <div class="mb-3">
+                            <label class="form-label">ID Étudiant *</label>
+                            <input type="number" class="form-control" id="empruntEtudiantId" required>
+                            <small class="text-muted">ID numérique de l'étudiant</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ISBN Livre *</label>
+                            <input type="text" class="form-control" id="empruntLivreId" required maxlength="13">
+                            <small class="text-muted">Code ISBN du livre à emprunter</small>
+                        </div>
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle"></i> Durée: 14 jours • Limite: 5 emprunts/étudiant
+                            </small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEmprunt()">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
