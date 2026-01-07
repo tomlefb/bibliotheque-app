@@ -1,0 +1,126 @@
+<div class="container mt-4 fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people me-2"></i>Gestion des Etudiants</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#etudiantModal" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i>Ajouter un étudiant
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && etudiants.length === 0" class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>Aucun étudiant trouvé. Ajoutez-en un pour commencer.
+  </div>
+
+  <div *ngIf="!loading && etudiants.length > 0" class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let etudiant of etudiants">
+          <td>{{ etudiant.id }}</td>
+          <td>{{ etudiant.nom }}</td>
+          <td>{{ etudiant.prenom }}</td>
+          <td>{{ etudiant.email }}</td>
+          <td class="text-end">
+            <button
+              class="btn btn-sm btn-outline-primary me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#etudiantModal"
+              (click)="openEditModal(etudiant)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteEtudiant(etudiant.id!, etudiant.nom, etudiant.prenom)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="etudiantModal" tabindex="-1" aria-labelledby="etudiantModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="etudiantModalLabel">
+          {{ isEditing ? 'Modifier' : 'Ajouter' }} un étudiant
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="modalError" class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ modalError }}
+        </div>
+
+        <form>
+          <div class="mb-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nom"
+              [(ngModel)]="formData.nom"
+              name="nom"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input
+              type="text"
+              class="form-control"
+              id="prenom"
+              [(ngModel)]="formData.prenom"
+              name="prenom"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              [(ngModel)]="formData.email"
+              name="email"
+              required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="saveEtudiant()" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isEditing ? 'Modifier' : 'Ajouter' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<app-confirm-modal (confirmed)="onConfirmAction()" (cancelled)="onCancelAction()"></app-confirm-modal>

@@ -1,0 +1,194 @@
+<div class="container mt-4 fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-arrow-left-right me-2"></i>Gestion des Emprunts</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#empruntModal" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i>Nouvel emprunt
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <!-- Filtres et Recherche -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="btn-group" role="group">
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="currentFilter === 'tous' ? 'btn-primary' : 'btn-outline-primary'"
+          (click)="filterEmprunts('tous')">
+          Tous
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="currentFilter === 'en_cours' ? 'btn-primary' : 'btn-outline-primary'"
+          (click)="filterEmprunts('en_cours')">
+          En cours
+        </button>
+        <button
+          type="button"
+          class="btn"
+          [ngClass]="currentFilter === 'en_retard' ? 'btn-primary' : 'btn-outline-primary'"
+          (click)="filterEmprunts('en_retard')">
+          En retard
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Rechercher par étudiant ou livre..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()">
+        <button
+          *ngIf="searchTerm"
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="searchTerm = ''; onSearchChange()">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && filteredEmprunts.length === 0" class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>Aucun emprunt trouvé.
+  </div>
+
+  <div *ngIf="!loading && filteredEmprunts.length > 0" class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Etudiant</th>
+          <th>Livre</th>
+          <th>Date emprunt</th>
+          <th>Date retour</th>
+          <th>Statut</th>
+          <th>Amende</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emprunt of filteredEmprunts">
+          <td>{{ emprunt.id }}</td>
+          <td>{{ emprunt.prenom }} {{ emprunt.nom }}</td>
+          <td>{{ emprunt.titre }}</td>
+          <td>{{ emprunt.date_emprunt | date:'dd/MM/yyyy' }}</td>
+          <td>{{ emprunt.date_retour ? (emprunt.date_retour | date:'dd/MM/yyyy') : '-' }}</td>
+          <td>
+            <span class="badge" [ngClass]="getStatusBadgeClass(emprunt)">
+              {{ getStatusText(emprunt) }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="emprunt.amende && emprunt.amende > 0" class="text-danger fw-bold">
+              {{ emprunt.amende }} €
+            </span>
+            <span *ngIf="!emprunt.amende || emprunt.amende === 0">-</span>
+          </td>
+          <td class="text-end">
+            <button
+              *ngIf="!emprunt.date_retour"
+              class="btn btn-sm btn-outline-success me-1"
+              (click)="retourLivre(emprunt.id, emprunt.titre)">
+              <i class="bi bi-check-circle me-1"></i>Retour
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteEmprunt(emprunt.id, emprunt.titre)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<app-confirm-modal (confirmed)="onConfirmAction()" (cancelled)="onCancelAction()"></app-confirm-modal>
+
+<!-- Modal -->
+<div class="modal fade" id="empruntModal" tabindex="-1" aria-labelledby="empruntModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="empruntModalLabel">Nouvel emprunt</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="modalError" class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ modalError }}
+        </div>
+
+        <form>
+          <div class="mb-3">
+            <label for="etudiant" class="form-label">Etudiant</label>
+            <select
+              class="form-select"
+              id="etudiant"
+              [(ngModel)]="formData.etudiant_id"
+              name="etudiant"
+              required>
+              <option [ngValue]="0">Sélectionnez un étudiant</option>
+              <option *ngFor="let etudiant of etudiants" [ngValue]="etudiant.id">
+                {{ etudiant.prenom }} {{ etudiant.nom }} ({{ etudiant.email }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="livre" class="form-label">Livre disponible</label>
+            <select
+              class="form-select"
+              id="livre"
+              [(ngModel)]="formData.livre_id"
+              name="livre"
+              required>
+              <option value="">Sélectionnez un livre</option>
+              <option *ngFor="let livre of livres" [value]="livre.isbn">
+                {{ livre.titre }} ({{ livre.exemplaires_dispo }} dispo)
+              </option>
+            </select>
+          </div>
+
+          <div *ngIf="livres.length === 0" class="alert alert-warning">
+            <i class="bi bi-exclamation-circle me-2"></i>Aucun livre disponible pour le moment.
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="addEmprunt()"
+          [disabled]="loading || livres.length === 0">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

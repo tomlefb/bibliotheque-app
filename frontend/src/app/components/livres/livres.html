@@ -1,0 +1,155 @@
+<div class="container mt-4 fade-in">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-book me-2"></i>Gestion des Livres</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#livreModal" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i>Ajouter un livre
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+    <button type="button" class="btn-close" (click)="dismissAlert()"></button>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && livres.length === 0" class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>Aucun livre trouvé. Ajoutez-en un pour commencer.
+  </div>
+
+  <div *ngIf="!loading && livres.length > 0" class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ISBN</th>
+          <th>Titre</th>
+          <th>Editeur</th>
+          <th>Année</th>
+          <th>Exemplaires</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let livre of livres">
+          <td><code>{{ livre.isbn }}</code></td>
+          <td>{{ livre.titre }}</td>
+          <td>{{ livre.editeur }}</td>
+          <td>{{ livre.annee_publication }}</td>
+          <td>
+            <span class="badge" [ngClass]="livre.exemplaires_dispo > 0 ? 'bg-success' : 'bg-danger'">
+              {{ livre.exemplaires_dispo }}
+            </span>
+          </td>
+          <td class="text-end">
+            <button
+              class="btn btn-sm btn-outline-primary me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#livreModal"
+              (click)="openEditModal(livre)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteLivre(livre.isbn, livre.titre)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="livreModal" tabindex="-1" aria-labelledby="livreModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="livreModalLabel">
+          {{ isEditing ? 'Modifier' : 'Ajouter' }} un livre
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="modalError" class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ modalError }}
+        </div>
+
+        <form>
+          <div class="mb-3">
+            <label for="isbn" class="form-label">ISBN</label>
+            <input
+              type="text"
+              class="form-control"
+              id="isbn"
+              [(ngModel)]="formData.isbn"
+              name="isbn"
+              [disabled]="isEditing"
+              required>
+            <div class="form-text">Format: 978-3-16-148410-0</div>
+          </div>
+          <div class="mb-3">
+            <label for="titre" class="form-label">Titre</label>
+            <input
+              type="text"
+              class="form-control"
+              id="titre"
+              [(ngModel)]="formData.titre"
+              name="titre"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="editeur" class="form-label">Editeur</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editeur"
+              [(ngModel)]="formData.editeur"
+              name="editeur"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="annee_publication" class="form-label">Année de publication</label>
+            <input
+              type="number"
+              class="form-control"
+              id="annee_publication"
+              [(ngModel)]="formData.annee_publication"
+              name="annee_publication"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="exemplaires_dispo" class="form-label">Exemplaires disponibles</label>
+            <input
+              type="number"
+              class="form-control"
+              id="exemplaires_dispo"
+              [(ngModel)]="formData.exemplaires_dispo"
+              name="exemplaires_dispo"
+              min="0"
+              required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="saveLivre()" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isEditing ? 'Modifier' : 'Ajouter' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<app-confirm-modal (confirmed)="onConfirmAction()" (cancelled)="onCancelAction()"></app-confirm-modal>
