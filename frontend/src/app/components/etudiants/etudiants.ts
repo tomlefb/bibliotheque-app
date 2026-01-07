@@ -89,8 +89,8 @@ export class Etudiants implements OnInit {
     operation.subscribe({
       next: () => {
         this.successMessage = this.isEditing
-          ? 'Etudiant modifié avec succès'
-          : 'Etudiant ajouté avec succès';
+          ? 'Étudiant modifié avec succès'
+          : 'Étudiant ajouté avec succès';
         this.loading = false;
         this.loadEtudiants();
         this.closeModal();
@@ -117,7 +117,7 @@ export class Etudiants implements OnInit {
 
       this.apiService.deleteEtudiant(id).subscribe({
         next: () => {
-          this.successMessage = 'Etudiant supprimé avec succès';
+          this.successMessage = 'Étudiant supprimé avec succès';
           this.loading = false;
           this.loadEtudiants();
           this.cdr.detectChanges();
