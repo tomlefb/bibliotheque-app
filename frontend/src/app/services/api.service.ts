@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+
+import { Emprunt } from '../models/emprunt.model';
 import { Etudiant } from '../models/etudiant.model';
 import { Livre } from '../models/livre.model';
-import { Emprunt } from '../models/emprunt.model';
 import { Stats } from '../models/stats.model';
 
 @Injectable({
