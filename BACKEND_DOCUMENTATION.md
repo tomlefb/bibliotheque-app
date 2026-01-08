@@ -386,6 +386,21 @@ def create(titre: str, editeur: str, isbn: str, annee: int = None, exemplaires: 
     )
     return isbn
 
+def update(isbn: str, titre: str, editeur: str, annee: int = None, exemplaires: int = None):
+    """Met à jour un livre (titre, éditeur, année et exemplaires)"""
+    if exemplaires is not None:
+        execute_query(
+            """UPDATE livre SET titre = %s, editeur = %s, annee_publication = %s, exemplaires_dispo = %s
+               WHERE isbn = %s""",
+            (titre, editeur, annee, exemplaires, isbn)
+        )
+    else:
+        execute_query(
+            """UPDATE livre SET titre = %s, editeur = %s, annee_publication = %s
+               WHERE isbn = %s""",
+            (titre, editeur, annee, isbn)
+        )
+
 def est_disponible(isbn: str) -> bool:
     """Vérifie si au moins un exemplaire est disponible"""
     result = execute_query(
@@ -627,6 +642,55 @@ DELETE /api/emprunts/{id}       → Supprime un emprunt
 GET    /api/stats/overview      → Vue d'ensemble
 GET    /api/stats/top-etudiants → Top 5 emprunteurs
 GET    /api/stats/top-livres    → Top 5 livres empruntés
+```
+
+### 6.4 Service de statistiques (services/stats_service.py)
+
+```python
+def get_totaux() -> Dict:
+    """Retourne le nombre total d'étudiants, livres, emprunts et exemplaires"""
+    query_etudiants = "SELECT COUNT(*) as total FROM etudiant"
+    query_livres = "SELECT COUNT(*) as total FROM livre"
+    query_emprunts = "SELECT COUNT(*) as total FROM emprunt"
+    query_exemplaires = "SELECT SUM(exemplaires_dispo) as total FROM livre"
+
+    total_etudiants = execute_query(query_etudiants, fetch_one=True)
+    total_livres = execute_query(query_livres, fetch_one=True)
+    total_emprunts = execute_query(query_emprunts, fetch_one=True)
+    total_exemplaires = execute_query(query_exemplaires, fetch_one=True)
+
+    return {
+        'etudiants': total_etudiants['total'] if total_etudiants else 0,
+        'livres': total_livres['total'] if total_livres else 0,
+        'emprunts': total_emprunts['total'] if total_emprunts else 0,
+        'exemplaires': total_exemplaires['total'] if total_exemplaires and total_exemplaires['total'] else 0
+    }
+
+def get_top_etudiants(limit: int = 5) -> List[Dict]:
+    """Retourne les étudiants ayant le plus d'emprunts"""
+    query = """
+        SELECT et.id_etud as id, et.nom, et.prenom, COUNT(e.id_emprunt) as nombre_emprunts
+        FROM etudiant et
+        LEFT JOIN emprunt e ON et.id_etud = e.id_etud
+        GROUP BY et.id_etud, et.nom, et.prenom
+        HAVING COUNT(e.id_emprunt) > 0
+        ORDER BY nombre_emprunts DESC
+        LIMIT %s
+    """
+    return execute_query(query, (limit,), fetch=True) or []
+
+def get_top_livres(limit: int = 5) -> List[Dict]:
+    """Retourne les livres les plus empruntés"""
+    query = """
+        SELECT l.isbn, l.titre, l.editeur as auteur, COUNT(e.id_emprunt) as nombre_emprunts
+        FROM livre l
+        LEFT JOIN emprunt e ON l.isbn = e.isbn
+        GROUP BY l.isbn, l.titre, l.editeur
+        HAVING COUNT(e.id_emprunt) > 0
+        ORDER BY nombre_emprunts DESC
+        LIMIT %s
+    """
+    return execute_query(query, (limit,), fetch=True) or []
 ```
 
 ---

@@ -448,12 +448,8 @@ export class Etudiants implements OnInit {
 
   // === UTILITAIRES ===
   closeModal(): void {
-    const modalElement = document.getElementById('etudiantModal');
-    if (modalElement && typeof bootstrap !== 'undefined') {
-      const modal = bootstrap.Modal.getInstance(modalElement)
-                 || new bootstrap.Modal(modalElement);
-      modal.hide();
-    }
+    // Recharge la page pour fermer le modal proprement et rafraîchir les données
+    window.location.reload();
   }
 
   dismissAlert(): void {
@@ -518,12 +514,9 @@ export class Etudiants implements OnInit {
           <td>{{ etudiant.prenom }}</td>
           <td>{{ etudiant.email }}</td>
           <td>
-            <span *ngIf="etudiant.solde_amende > 0; else noAmende" class="text-danger fw-bold">
-              {{ etudiant.solde_amende | number:'1.2-2' }} €
+            <span [ngClass]="{'text-danger fw-bold': +(etudiant.solde_amende ?? 0) > 0, 'text-muted': +(etudiant.solde_amende ?? 0) === 0}">
+              {{ etudiant.solde_amende ?? '0.00' }} €
             </span>
-            <ng-template #noAmende>
-              <span class="text-muted">0.00 €</span>
-            </ng-template>
           </td>
           <td class="text-end">
             <button class="btn btn-sm btn-outline-primary me-2"
@@ -818,12 +811,12 @@ loadStats(): void {
 ### 14.1 Filtrage côté frontend
 
 ```typescript
-currentFilter = 'tous';
+activeFilter = 'tous';
 searchTerm = '';
 filteredEmprunts: Emprunt[] = [];
 
 filterEmprunts(filtre: string): void {
-  this.currentFilter = filtre;
+  this.activeFilter = filtre;
   this.loadEmprunts();  // Recharge depuis l'API
 }
 
