@@ -162,11 +162,12 @@ export const routes: Routes = [
 ```typescript
 // models/etudiant.model.ts
 export interface Etudiant {
-  id?: number;           // Optionnel car généré par la BDD
+  id?: number;                // Optionnel car généré par la BDD
   nom: string;
   prenom: string;
   email: string;
-  created_at?: string;
+  date_inscription?: string;  // Date d'inscription à la bibliothèque
+  solde_amende?: number;      // Solde des amendes en euros
 }
 ```
 
@@ -506,6 +507,7 @@ export class Etudiants implements OnInit {
           <th>Nom</th>
           <th>Prénom</th>
           <th>Email</th>
+          <th>Solde amende</th>
           <th class="text-end">Actions</th>
         </tr>
       </thead>
@@ -515,6 +517,14 @@ export class Etudiants implements OnInit {
           <td>{{ etudiant.nom }}</td>
           <td>{{ etudiant.prenom }}</td>
           <td>{{ etudiant.email }}</td>
+          <td>
+            <span *ngIf="etudiant.solde_amende > 0; else noAmende" class="text-danger fw-bold">
+              {{ etudiant.solde_amende | number:'1.2-2' }} €
+            </span>
+            <ng-template #noAmende>
+              <span class="text-muted">0.00 €</span>
+            </ng-template>
+          </td>
           <td class="text-end">
             <button class="btn btn-sm btn-outline-primary me-2"
                     data-bs-toggle="modal" data-bs-target="#etudiantModal"

@@ -34,6 +34,7 @@
           <th>Nom</th>
           <th>Prénom</th>
           <th>Email</th>
+          <th>Solde amende</th>
           <th class="text-end">Actions</th>
         </tr>
       </thead>
@@ -43,6 +44,11 @@
           <td>{{ etudiant.nom }}</td>
           <td>{{ etudiant.prenom }}</td>
           <td>{{ etudiant.email }}</td>
+          <td>
+            <span [ngClass]="{'text-danger fw-bold': +(etudiant.solde_amende ?? 0) > 0, 'text-muted': +(etudiant.solde_amende ?? 0) === 0}">
+              {{ etudiant.solde_amende ?? '0.00' }} €
+            </span>
+          </td>
           <td class="text-end">
             <button
               class="btn btn-sm btn-outline-primary me-2"

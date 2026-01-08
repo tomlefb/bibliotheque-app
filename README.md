@@ -122,7 +122,7 @@ bibliotheque-app/
 
 | Backend | Frontend |
 |---------|----------|
-| Python 3.x | Angular 21 |
+| Python 3 | Angular 21 |
 | Flask | TypeScript |
 | PostgreSQL | Bootstrap 5 |
 | psycopg2 | RxJS |
