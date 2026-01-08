@@ -150,6 +150,13 @@ export class ApiService {
       }
       return 'Opération impossible : des données liées existent.';
     }
+    // Valeur trop longue pour un champ
+    if (message.includes('value too long') || message.includes('too long for type')) {
+      if (message.includes('isbn')) {
+        return 'L\'ISBN est trop long (maximum 13 caractères).';
+      }
+      return 'La valeur saisie est trop longue pour ce champ.';
+    }
     // Message par défaut
     return message;
   }
