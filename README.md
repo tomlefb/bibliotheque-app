@@ -1,340 +1,134 @@
-# Bibliothèque Universitaire - Application de Gestion
+# Bibliothèque App
 
-Application complète de gestion de bibliothèque universitaire avec interface web moderne et CLI Python + PostgreSQL.
+Application de gestion de bibliothèque - **Backend Flask + Frontend Angular + PostgreSQL**
 
-## Fonctionnalités
+---
 
-### CRUD Complet
-- **Étudiants** : Créer, Lister, Rechercher, Modifier, Supprimer
-- **Livres** : Créer, Lister, Rechercher, Modifier, Supprimer
-- **Emprunts** : Créer, Lister (tous/en cours/en retard), Retourner, Supprimer
+## Lancement rapide (avec Docker PostgreSQL du cours)
 
-### Fonctionnalités Métier
-- Gestion des emprunts avec validation (disponibilité livre, limite par étudiant)
-- Calcul automatique des retards et amendes (0.50€/jour)
-- Emprunts limités à 5 par étudiant
-- Durée d'emprunt par défaut : 14 jours
-
-### Statistiques
-- Vue d'ensemble (totaux, taux d'emprunt)
-- Top 5 étudiants (plus d'emprunts)
-- Top 5 livres (plus empruntés)
-- Liste des emprunts en retard avec amendes
-
-## Stack Technique
-
-### Backend
-- **Python** 3.14+
-- **Flask** (API REST + serveur web)
-- **PostgreSQL** (base de données)
-- **psycopg2-binary** (driver PostgreSQL)
-- **python-dotenv** (variables d'environnement)
-
-### Frontend
-- **HTML5** / **CSS3**
-- **Bootstrap 5** (framework UI)
-- **JavaScript** vanilla (fetch API, DOM manipulation)
-- **Bootstrap Icons**
-
-## Structure du Projet
-
-```
-bibliotheque-app/
-├── main.py                 # Point d'entrée CLI
-├── app.py                  # Serveur Flask + API REST
-├── templates/
-│   └── index.html          # Interface web
-├── static/
-│   ├── css/
-│   │   └── style.css       # Styles custom
-│   └── js/
-│       └── app.js          # Logique frontend
-├── config/
-│   ├── database.py         # Connexion BDD + requêtes sécurisées
-│   └── settings.py         # Constantes de l'application
-├── models/
-│   ├── etudiant.py         # CRUD Etudiant
-│   ├── livre.py            # CRUD Livre
-│   └── emprunt.py          # CRUD Emprunt + calculs amendes
-├── services/
-│   └── stats_service.py    # Statistiques et agrégations
-├── utils/
-│   ├── validators.py       # Validation des inputs
-│   ├── formatters.py       # Formatage affichage console
-│   └── logger.py           # Logging simple
-├── views/
-│   ├── menu.py             # Menu principal
-│   ├── etudiant_view.py    # Interface étudiants
-│   ├── livre_view.py       # Interface livres
-│   ├── emprunt_view.py     # Interface emprunts
-│   └── stats_view.py       # Interface statistiques
-├── sql/
-│   ├── init.sql            # Création des tables
-│   └── seed.sql            # Données de test
-├── .env.example            # Template variables d'environnement
-├── requirements.txt        # Dépendances Python
-└── README.md
-```
-
-## Installation
-
-### 1. Prérequis
-
-- Python 3.14+ installé
-- PostgreSQL installé et démarré
-- Git (optionnel)
-
-### 2. Cloner le projet
+Si vous avez déjà la BDD Docker du cours avec `password` comme mot de passe :
 
 ```bash
-git clone <url-du-repo>
-cd bibliotheque-app
-```
-
-### 3. Créer un environnement virtuel
-
-```bash
-python -m venv venv
-
-# Activer l'environnement
-# Sur macOS/Linux:
-source venv/bin/activate
-
-# Sur Windows:
-venv\Scripts\activate
-```
-
-### 4. Installer les dépendances
-
-```bash
+# 1. Backend
+cd backend
 pip install -r requirements.txt
+python app.py
+# → http://localhost:5001
+
+# 2. Frontend (dans un autre terminal)
+cd frontend
+npm install
+npm start
+# → http://localhost:4200
 ```
 
-### 5. Configuration de la base de données
+---
 
-#### a. Créer le fichier .env
+## Installation complète (sans la BDD)
 
+### 1. Base de données PostgreSQL
+
+**Option A - Avec Docker :**
 ```bash
-cp .env.example .env
+docker run -d \
+  --name postgres-biblio \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  postgres:14
 ```
 
-Modifier `.env` avec vos paramètres PostgreSQL :
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=bibliotheque
-DB_USER=postgres
-DB_PASSWORD=votre_mot_de_passe
-```
-
-#### b. Créer la base de données
-
-Se connecter à PostgreSQL :
-
+**Option B - PostgreSQL installé :**
 ```bash
 psql -U postgres
-```
-
-Créer la base :
-
-```sql
 CREATE DATABASE bibliotheque;
 \q
 ```
 
-#### c. Initialiser les tables
+### 2. Initialiser les tables
 
 ```bash
+cd backend
 psql -U postgres -d bibliotheque -f sql/init.sql
+psql -U postgres -d bibliotheque -f sql/seed.sql  # Données de test
 ```
 
-#### d. Insérer les données de test (optionnel)
+### 3. Configurer le backend
 
 ```bash
-psql -U postgres -d bibliotheque -f sql/seed.sql
+cd backend
+cp .env.example .env
+# Modifier .env si nécessaire (par défaut : password)
 ```
 
-## Utilisation
+Contenu du `.env` :
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=bibliotheque
+DB_USER=postgres
+DB_PASSWORD=password
+```
 
-### Option 1 : Interface Web (recommandé)
-
-Lancer le serveur Flask :
+### 4. Lancer le backend
 
 ```bash
+cd backend
+pip install -r requirements.txt
 python app.py
 ```
+→ API disponible sur **http://localhost:5001**
 
-Ouvrir le navigateur : **http://localhost:5000**
-
-L'interface web offre :
-- Navigation par onglets (Étudiants, Livres, Emprunts, Statistiques)
-- Recherche en temps réel
-- Modales pour ajouter/modifier
-- Tableaux interactifs
-- Design responsive et moderne
-
-### Option 2 : Interface CLI
+### 5. Lancer le frontend
 
 ```bash
-python main.py
+cd frontend
+npm install
+npm start
 ```
+→ Application disponible sur **http://localhost:4200**
 
-### Navigation dans les menus
+---
 
-L'application propose une navigation par menus numérotés :
-
-```
-========================================
-GESTION BIBLIOTHEQUE UNIVERSITAIRE
-========================================
-  1. Gérer les étudiants
-  2. Gérer les livres
-  3. Gérer les emprunts
-  4. Statistiques
-  5. Quitter
-========================================
-Choix:
-```
-
-Entrez le numéro de votre choix et validez avec Entrée.
-
-### Exemples d'opérations
-
-#### Interface Web
-
-**Ajouter un étudiant :**
-1. Onglet "Étudiants"
-2. Cliquer "Ajouter"
-3. Remplir le formulaire
-4. Cliquer "Enregistrer"
-
-**Créer un emprunt :**
-1. Onglet "Emprunts"
-2. Cliquer "Nouvel emprunt"
-3. Saisir ID étudiant et ID livre
-4. Cliquer "Créer"
-
-**Retourner un livre :**
-1. Onglet "Emprunts"
-2. Cliquer sur l'icône verte ✓ dans la ligne de l'emprunt
-3. L'amende éventuelle est affichée
-
-#### Interface CLI
-
-**Ajouter un étudiant :**
-1. Menu principal → `1`
-2. Gérer les étudiants → `4`
-3. Saisir nom, prénom, email
-
-## Sécurité
-
-### Points d'attention implémentés
-
-- **Variables d'environnement** : Credentials BDD stockés dans `.env` (non versionné)
-- **Requêtes paramétrées** : 100% des requêtes SQL utilisent des placeholders `%s`
-- **Validation des inputs** : Tous les inputs utilisateur sont validés avant traitement
-- **Gestionnaires de contexte** : Utilisation de `with` pour toutes les connexions BDD
-- **Gestion d'erreurs** : Try/except avec rollback sur toutes les opérations critiques
-- **Contraintes d'intégrité** : Foreign keys, checks, et validations au niveau BDD
-
-### Bonnes pratiques
-
-- Pas de concaténation SQL (protection contre injection SQL)
-- Fermeture automatique des connexions
-- Logging des erreurs
-- Messages d'erreur clairs pour l'utilisateur
-- Confirmation avant suppression
-
-## Architecture
-
-### Principes de développement
-
-- **KISS** : Code simple et direct
-- **Fonctions pures** : Pas de classes inutiles
-- **Séparation des responsabilités** : Modèles / Services / Vues
-- **Type hints** : Pour la clarté du code
-- **Docstrings** : Documentation en français
-
-### Couches applicatives
-
-1. **Models** : Opérations CRUD sur la base de données
-2. **Services** : Logique métier et calculs
-3. **Views** : Interface utilisateur (menus, affichage)
-4. **Utils** : Fonctions utilitaires (validation, formatage, logging)
-5. **Config** : Configuration BDD et constantes
-
-## Schéma de Base de Données
-
-```sql
-etudiant
-├── id (PK)
-├── nom
-├── prenom
-├── email (UNIQUE)
-└── created_at
-
-livre
-├── id (PK)
-├── titre
-├── auteur
-├── annee_publication
-└── created_at
-
-emprunt
-├── id (PK)
-├── etudiant_id (FK → etudiant.id)
-├── livre_id (FK → livre.id)
-├── date_emprunt
-├── date_retour (NULL si en cours)
-└── created_at
-```
-
-## Tests
-
-L'application peut être testée avec les données de test fournies dans `sql/seed.sql` qui contient :
-- 10 étudiants
-- 25 livres (classiques, SF, tech, etc.)
-- Emprunts en cours, en retard, et terminés
-
-## Logs
-
-Les opérations importantes sont enregistrées dans `app.log` :
-- Démarrage/arrêt de l'application
-- Erreurs de connexion BDD
-- Erreurs SQL
-
-## Troubleshooting
-
-### Erreur de connexion PostgreSQL
+## Structure
 
 ```
-Vérifiez que PostgreSQL est démarré
-Vérifiez les credentials dans .env
-Testez: psql -U postgres -d bibliotheque
+bibliotheque-app/
+├── backend/           # API REST Python Flask
+│   ├── app.py         # Point d'entrée
+│   ├── models/        # CRUD (etudiant, livre, emprunt)
+│   ├── services/      # Stats
+│   ├── sql/           # Scripts SQL
+│   └── .env           # Config BDD
+│
+└── frontend/          # SPA Angular
+    └── src/app/
+        ├── components/  # Pages (home, etudiants, livres, emprunts)
+        └── services/    # ApiService
 ```
 
-### Import errors
+---
 
-```bash
-# Vérifier que l'environnement virtuel est activé
-which python  # doit pointer vers venv/bin/python
+## Fonctionnalités
 
-# Réinstaller les dépendances
-pip install -r requirements.txt
-```
+- CRUD Étudiants / Livres / Emprunts
+- Filtres emprunts (tous / en cours / en retard)
+- Calcul automatique des amendes (0.50€/jour après 14 jours)
+- Limite de 5 emprunts par étudiant
+- Statistiques (top étudiants, top livres, taux d'emprunt)
 
-### Table déjà existe
+---
 
-```bash
-# Réinitialiser la base
-psql -U postgres -d bibliotheque -f sql/init.sql
-```
+## Tech Stack
 
-## Auteur
+| Backend | Frontend |
+|---------|----------|
+| Python 3.x | Angular 21 |
+| Flask | TypeScript |
+| PostgreSQL | Bootstrap 5 |
+| psycopg2 | RxJS |
 
-Projet développé pour le Bachelor 3 - Administration de Base de Données - Sup de Vinci
+---
 
-## Licence
+## Auteurs
 
-Projet académique
+**Tom LEFEVRE-BONZON & Ilies MAHOUDEAU** - B3 Dev SDV
