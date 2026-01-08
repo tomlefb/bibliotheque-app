@@ -175,8 +175,11 @@ def update_livre(isbn):
         annee = None
         if data.get('annee_publication'):
             annee = valider_annee(str(data.get('annee_publication')))
+        exemplaires = data.get('exemplaires_dispo')
+        if exemplaires is not None:
+            exemplaires = int(exemplaires)
 
-        livre.update(isbn, titre, editeur, annee)
+        livre.update(isbn, titre, editeur, annee, exemplaires)
         return jsonify({'message': 'Livre modifié'}), 200
     except ValueError as e:
         return jsonify({'error': str(e)}), 400

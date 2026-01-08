@@ -37,14 +37,22 @@ def search(terme: str) -> List[Dict]:
     return execute_query(query, (pattern, pattern), fetch=True) or []
 
 
-def update(isbn: str, titre: str, editeur: str, annee: Optional[int] = None) -> bool:
+def update(isbn: str, titre: str, editeur: str, annee: Optional[int] = None, exemplaires: Optional[int] = None) -> bool:
     """Met à jour les infos d'un livre"""
-    query = """
-        UPDATE livre
-        SET titre = %s, editeur = %s, annee = %s
-        WHERE isbn = %s
-    """
-    return execute_query(query, (titre, editeur, annee, isbn))
+    if exemplaires is not None:
+        query = """
+            UPDATE livre
+            SET titre = %s, editeur = %s, annee = %s, exemplaires_dispo = %s
+            WHERE isbn = %s
+        """
+        return execute_query(query, (titre, editeur, annee, exemplaires, isbn))
+    else:
+        query = """
+            UPDATE livre
+            SET titre = %s, editeur = %s, annee = %s
+            WHERE isbn = %s
+        """
+        return execute_query(query, (titre, editeur, annee, isbn))
 
 
 def delete(isbn: str) -> bool:
