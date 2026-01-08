@@ -4,6 +4,7 @@ export interface StatsOverview {
     etudiants: number;
     livres: number;
     emprunts: number;
+    exemplaires: number;
   };
   emprunts: {
     en_cours: number;
