@@ -3,7 +3,7 @@
 
 -- Nettoyage des données existantes
 TRUNCATE TABLE emprunt CASCADE;
-TRUNCATE TABLE livre RESTART IDENTITY CASCADE;
+TRUNCATE TABLE livre CASCADE;
 TRUNCATE TABLE etudiant RESTART IDENTITY CASCADE;
 
 -- Insertion d'étudiants
@@ -19,70 +19,77 @@ INSERT INTO etudiant (nom, prenom, email) VALUES
     ('Laurent', 'Lucas', 'lucas.laurent@supdevinci.fr'),
     ('Michel', 'Chloé', 'chloe.michel@supdevinci.fr');
 
--- Insertion de livres
-INSERT INTO livre (titre, auteur, annee_publication) VALUES
+-- Insertion de livres (avec ISBN)
+INSERT INTO livre (isbn, titre, editeur, annee, exemplaires_dispo) VALUES
     -- Classiques français
-    ('Le Petit Prince', 'Antoine de Saint-Exupéry', 1943),
-    ('Les Misérables', 'Victor Hugo', 1862),
-    ('L''Étranger', 'Albert Camus', 1942),
-    ('Madame Bovary', 'Gustave Flaubert', 1857),
-    ('Le Comte de Monte-Cristo', 'Alexandre Dumas', 1844),
+    ('978-2-07-040850-4', 'Le Petit Prince', 'Gallimard', 1943, 3),
+    ('978-2-07-040999-0', 'Les Misérables', 'Gallimard', 1862, 2),
+    ('978-2-07-036024-8', 'L''Étranger', 'Gallimard', 1942, 2),
+    ('978-2-07-041239-6', 'Madame Bovary', 'Gallimard', 1857, 1),
+    ('978-2-07-040826-9', 'Le Comte de Monte-Cristo', 'Gallimard', 1844, 2),
 
     -- Classiques anglais/américains
-    ('1984', 'George Orwell', 1949),
-    ('To Kill a Mockingbird', 'Harper Lee', 1960),
-    ('The Great Gatsby', 'F. Scott Fitzgerald', 1925),
-    ('Pride and Prejudice', 'Jane Austen', 1813),
-    ('Brave New World', 'Aldous Huxley', 1932),
+    ('978-2-07-036822-0', '1984', 'Gallimard', 1949, 3),
+    ('978-2-253-11587-3', 'To Kill a Mockingbird', 'Le Livre de Poche', 1960, 2),
+    ('978-2-07-036024-9', 'The Great Gatsby', 'Gallimard', 1925, 1),
+    ('978-2-253-00434-4', 'Pride and Prejudice', 'Le Livre de Poche', 1813, 2),
+    ('978-2-266-28322-4', 'Brave New World', 'Pocket', 1932, 1),
 
     -- Fantasy/SF
-    ('Harry Potter à l''école des sorciers', 'J.K. Rowling', 1997),
-    ('Le Seigneur des Anneaux', 'J.R.R. Tolkien', 1954),
-    ('Dune', 'Frank Herbert', 1965),
-    ('Foundation', 'Isaac Asimov', 1951),
-    ('The Hitchhiker''s Guide to the Galaxy', 'Douglas Adams', 1979),
+    ('978-2-07-054602-2', 'Harry Potter à l''école des sorciers', 'Gallimard', 1997, 4),
+    ('978-2-267-02700-0', 'Le Seigneur des Anneaux', 'Christian Bourgois', 1954, 2),
+    ('978-2-266-23339-7', 'Dune', 'Pocket', 1965, 2),
+    ('978-2-07-041239-7', 'Foundation', 'Gallimard', 1951, 1),
+    ('978-2-07-046540-8', 'The Hitchhiker''s Guide to the Galaxy', 'Gallimard', 1979, 2),
 
     -- Littérature contemporaine
-    ('L''Alchimiste', 'Paulo Coelho', 1988),
-    ('Cent ans de solitude', 'Gabriel García Márquez', 1967),
-    ('Le Nom de la rose', 'Umberto Eco', 1980),
-    ('Americanah', 'Chimamanda Ngozi Adichie', 2013),
-    ('Les Bienveillantes', 'Jonathan Littell', 2006),
+    ('978-2-08-070359-5', 'L''Alchimiste', 'Flammarion', 1988, 3),
+    ('978-2-02-006070-5', 'Cent ans de solitude', 'Seuil', 1967, 1),
+    ('978-2-253-03765-6', 'Le Nom de la rose', 'Le Livre de Poche', 1980, 2),
+    ('978-2-07-045421-1', 'Americanah', 'Gallimard', 2013, 1),
+    ('978-2-07-034700-3', 'Les Bienveillantes', 'Gallimard', 2006, 1),
 
     -- Informatique/Tech
-    ('Clean Code', 'Robert C. Martin', 2008),
-    ('The Pragmatic Programmer', 'Andrew Hunt', 1999),
-    ('Introduction to Algorithms', 'Thomas H. Cormen', 1990),
-    ('Design Patterns', 'Erich Gamma', 1994),
-    ('The Phoenix Project', 'Gene Kim', 2013);
+    ('978-0-13-235088-4', 'Clean Code', 'Prentice Hall', 2008, 3),
+    ('978-0-201-61622-4', 'The Pragmatic Programmer', 'Addison-Wesley', 1999, 2),
+    ('978-0-262-03384-8', 'Introduction to Algorithms', 'MIT Press', 1990, 2),
+    ('978-0-201-63361-0', 'Design Patterns', 'Addison-Wesley', 1994, 2),
+    ('978-0-98826-259-1', 'The Phoenix Project', 'IT Revolution', 2013, 1);
 
 -- Insertion d'emprunts (quelques exemples)
 -- Emprunts en cours
-INSERT INTO emprunt (etudiant_id, livre_id, date_emprunt, date_retour) VALUES
-    (1, 1, CURRENT_DATE - INTERVAL '5 days', NULL),
-    (2, 6, CURRENT_DATE - INTERVAL '10 days', NULL),
-    (3, 11, CURRENT_DATE - INTERVAL '3 days', NULL),
-    (4, 21, CURRENT_DATE - INTERVAL '7 days', NULL),
-    (5, 15, CURRENT_DATE - INTERVAL '12 days', NULL);
+INSERT INTO emprunt (id_etud, isbn, date_emprunt, date_retour, amende) VALUES
+    (1, '978-2-07-040850-4', CURRENT_DATE - INTERVAL '5 days', NULL, 0),
+    (2, '978-2-07-036822-0', CURRENT_DATE - INTERVAL '10 days', NULL, 0),
+    (3, '978-2-07-054602-2', CURRENT_DATE - INTERVAL '3 days', NULL, 0),
+    (4, '978-0-13-235088-4', CURRENT_DATE - INTERVAL '7 days', NULL, 0),
+    (5, '978-2-07-046540-8', CURRENT_DATE - INTERVAL '12 days', NULL, 0);
 
 -- Emprunts en retard (plus de 14 jours)
-INSERT INTO emprunt (etudiant_id, livre_id, date_emprunt, date_retour) VALUES
-    (6, 3, CURRENT_DATE - INTERVAL '20 days', NULL),
-    (7, 12, CURRENT_DATE - INTERVAL '18 days', NULL),
-    (8, 7, CURRENT_DATE - INTERVAL '25 days', NULL);
+INSERT INTO emprunt (id_etud, isbn, date_emprunt, date_retour, amende) VALUES
+    (6, '978-2-07-036024-8', CURRENT_DATE - INTERVAL '20 days', NULL, 0),
+    (7, '978-2-267-02700-0', CURRENT_DATE - INTERVAL '18 days', NULL, 0),
+    (8, '978-2-253-11587-3', CURRENT_DATE - INTERVAL '25 days', NULL, 0);
 
 -- Emprunts terminés (retournés)
-INSERT INTO emprunt (etudiant_id, livre_id, date_emprunt, date_retour) VALUES
-    (1, 2, CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE - INTERVAL '16 days'),
-    (2, 5, CURRENT_DATE - INTERVAL '25 days', CURRENT_DATE - INTERVAL '11 days'),
-    (3, 8, CURRENT_DATE - INTERVAL '45 days', CURRENT_DATE - INTERVAL '31 days'),
-    (4, 13, CURRENT_DATE - INTERVAL '20 days', CURRENT_DATE - INTERVAL '8 days'),
-    (5, 16, CURRENT_DATE - INTERVAL '35 days', CURRENT_DATE - INTERVAL '22 days'),
-    (6, 19, CURRENT_DATE - INTERVAL '40 days', CURRENT_DATE - INTERVAL '28 days'),
-    (7, 22, CURRENT_DATE - INTERVAL '50 days', CURRENT_DATE - INTERVAL '38 days'),
-    (8, 4, CURRENT_DATE - INTERVAL '60 days', CURRENT_DATE - INTERVAL '48 days'),
-    (9, 9, CURRENT_DATE - INTERVAL '15 days', CURRENT_DATE - INTERVAL '3 days'),
-    (10, 14, CURRENT_DATE - INTERVAL '28 days', CURRENT_DATE - INTERVAL '15 days');
+INSERT INTO emprunt (id_etud, isbn, date_emprunt, date_retour, amende) VALUES
+    (1, '978-2-07-040999-0', CURRENT_DATE - INTERVAL '30 days', CURRENT_DATE - INTERVAL '16 days', 0),
+    (2, '978-2-07-040826-9', CURRENT_DATE - INTERVAL '25 days', CURRENT_DATE - INTERVAL '11 days', 0),
+    (3, '978-2-07-036024-9', CURRENT_DATE - INTERVAL '45 days', CURRENT_DATE - INTERVAL '31 days', 0),
+    (4, '978-2-266-23339-7', CURRENT_DATE - INTERVAL '20 days', CURRENT_DATE - INTERVAL '8 days', 0),
+    (5, '978-2-08-070359-5', CURRENT_DATE - INTERVAL '35 days', CURRENT_DATE - INTERVAL '22 days', 0),
+    (6, '978-2-07-045421-1', CURRENT_DATE - INTERVAL '40 days', CURRENT_DATE - INTERVAL '28 days', 0),
+    (7, '978-0-201-61622-4', CURRENT_DATE - INTERVAL '50 days', CURRENT_DATE - INTERVAL '38 days', 0),
+    (8, '978-2-07-041239-6', CURRENT_DATE - INTERVAL '60 days', CURRENT_DATE - INTERVAL '48 days', 0),
+    (9, '978-2-253-00434-4', CURRENT_DATE - INTERVAL '15 days', CURRENT_DATE - INTERVAL '3 days', 0),
+    (10, '978-2-07-041239-7', CURRENT_DATE - INTERVAL '28 days', CURRENT_DATE - INTERVAL '15 days', 0);
+
+-- Mettre à jour les exemplaires disponibles pour les emprunts en cours
+UPDATE livre SET exemplaires_dispo = exemplaires_dispo - 1 WHERE isbn IN (
+    '978-2-07-040850-4', '978-2-07-036822-0', '978-2-07-054602-2',
+    '978-0-13-235088-4', '978-2-07-046540-8', '978-2-07-036024-8',
+    '978-2-267-02700-0', '978-2-253-11587-3'
+);
 
 -- Afficher un résumé
 SELECT 'Données insérées avec succès!' AS message;
