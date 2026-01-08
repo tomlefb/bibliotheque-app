@@ -79,7 +79,7 @@ export class Livres implements OnInit {
     }
 
     if (this.formData.annee_publication < 1000 || this.formData.annee_publication > new Date().getFullYear() + 1) {
-      this.modalError = 'Année de publication invalide';
+      this.modalError = 'L\'année de publication doit être valide';
       this.cdr.detectChanges();
       return;
     }
