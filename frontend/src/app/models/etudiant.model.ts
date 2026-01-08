@@ -3,4 +3,6 @@ export interface Etudiant {
   nom: string;
   prenom: string;
   email: string;
+  date_inscription?: string;
+  solde_amende?: number;
 }
