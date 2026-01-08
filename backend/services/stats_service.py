@@ -7,15 +7,18 @@ def get_totaux() -> Dict:
     query_etudiants = "SELECT COUNT(*) as total FROM etudiant"
     query_livres = "SELECT COUNT(*) as total FROM livre"
     query_emprunts = "SELECT COUNT(*) as total FROM emprunt"
+    query_exemplaires = "SELECT SUM(exemplaires_dispo) as total FROM livre"
 
     total_etudiants = execute_query(query_etudiants, fetch_one=True)
     total_livres = execute_query(query_livres, fetch_one=True)
     total_emprunts = execute_query(query_emprunts, fetch_one=True)
+    total_exemplaires = execute_query(query_exemplaires, fetch_one=True)
 
     return {
         'etudiants': total_etudiants['total'] if total_etudiants else 0,
         'livres': total_livres['total'] if total_livres else 0,
-        'emprunts': total_emprunts['total'] if total_emprunts else 0
+        'emprunts': total_emprunts['total'] if total_emprunts else 0,
+        'exemplaires': total_exemplaires['total'] if total_exemplaires and total_exemplaires['total'] else 0
     }
 
 

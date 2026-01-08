@@ -42,7 +42,7 @@ export class Stats implements OnInit {
         this.stats = {
           total_etudiants: overview.totaux.etudiants,
           total_livres: overview.totaux.livres,
-          total_exemplaires: overview.totaux.emprunts,
+          total_exemplaires: overview.totaux.exemplaires,
           emprunts_en_cours: overview.emprunts.en_cours,
           emprunts_en_retard: 0, // Sera calcule depuis les emprunts en retard
           livres_disponibles: overview.livres_disponibles,
