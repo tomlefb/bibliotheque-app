@@ -150,7 +150,7 @@ def create_livre():
     try:
         data = request.json
         titre = valider_non_vide(data.get('titre', ''), 'titre')
-        editeur = valider_non_vide(data.get('auteur', ''), 'éditeur')  # Frontend envoie 'auteur'
+        editeur = valider_non_vide(data.get('editeur', ''), 'éditeur')
         isbn_val = valider_non_vide(data.get('isbn', ''), 'ISBN')
         annee = None
         if data.get('annee_publication'):
@@ -171,7 +171,7 @@ def update_livre(isbn):
     try:
         data = request.json
         titre = valider_non_vide(data.get('titre', ''), 'titre')
-        editeur = valider_non_vide(data.get('auteur', ''), 'éditeur')  # Frontend envoie 'auteur'
+        editeur = valider_non_vide(data.get('editeur', ''), 'éditeur')
         annee = None
         if data.get('annee_publication'):
             annee = valider_annee(str(data.get('annee_publication')))

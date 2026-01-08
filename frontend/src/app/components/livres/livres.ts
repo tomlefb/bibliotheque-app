@@ -166,11 +166,7 @@ export class Livres implements OnInit {
   }
 
   closeModal(): void {
-    const modalElement = document.getElementById('livreModal');
-    if (modalElement && typeof bootstrap !== 'undefined') {
-      const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-      modal.hide();
-    }
+    window.location.reload();
   }
 
   dismissAlert(): void {

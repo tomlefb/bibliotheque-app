@@ -23,21 +23,21 @@
         <button
           type="button"
           class="btn"
-          [ngClass]="currentFilter === 'tous' ? 'btn-primary' : 'btn-outline-primary'"
+          [ngClass]="activeFilter === 'tous' ? 'btn-primary' : 'btn-outline-primary'"
           (click)="filterEmprunts('tous')">
           Tous
         </button>
         <button
           type="button"
           class="btn"
-          [ngClass]="currentFilter === 'en_cours' ? 'btn-primary' : 'btn-outline-primary'"
+          [ngClass]="activeFilter === 'en_cours' ? 'btn-primary' : 'btn-outline-primary'"
           (click)="filterEmprunts('en_cours')">
           En cours
         </button>
         <button
           type="button"
           class="btn"
-          [ngClass]="currentFilter === 'en_retard' ? 'btn-primary' : 'btn-outline-primary'"
+          [ngClass]="activeFilter === 'en_retard' ? 'btn-primary' : 'btn-outline-primary'"
           (click)="filterEmprunts('en_retard')">
           En retard
         </button>
